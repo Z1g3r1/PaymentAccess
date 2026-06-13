@@ -11,10 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class PaymentService {
@@ -60,8 +57,6 @@ public class PaymentService {
         Payment payment = new Payment(amount, payerEmail, accessToken, uKassId);
         payment.setStatus(Payment.PaymentStatus.PAID);
         paymentRepository.save(payment);
-        System.out.println("SAVED uKassId: " + payment.getuKassId());
-        System.out.println("RETURN URL: " + confirmationUrl);
         return confirmationUrl;
     }
     private Map<String, Object> mockPaymentResponse() {
@@ -80,5 +75,8 @@ public class PaymentService {
     }
     public Optional<Payment> getById(Long id) {
         return paymentRepository.findById(id);
+    }
+    public List<Payment> getAllPayments() {
+        return paymentRepository.findAll();
     }
 }
