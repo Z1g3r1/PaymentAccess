@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -51,19 +52,33 @@ public class PaymentService {
         body.put("metadata", metadata);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, httpHeaders);
-        ResponseEntity<Map> response = restTemplate.postForEntity(
-                "https://api.yookassa.ru/v3/payments", request, Map.class
-        );
-        Map<String, Object> mockResponse = new HashMap<>();
-        Map<String, Object> mockConfirmation = new HashMap<>();
-        mockConfirmation.put("confirmation_url", "https://yookassa.ru/checkout/mock/" + UUID.randomUUID());
-        mockResponse.put("confirmation", mockConfirmation);
-        mockResponse.put("id", "mock_payment_" + UUID.randomUUID());
+        Map<String, Object> mockResponse = mockPaymentResponse();
+        Map<String, Object> mockConfirmation =(Map<String, Object>) mockResponse.get("confirmation");
         String confirmationUrl = (String) mockConfirmation.get("confirmation_url");
 
-        String uKassId =(String) response.getBody().get("id");
+        String uKassId = (String)  mockResponse.get("id");
         Payment payment = new Payment(amount, payerEmail, accessToken, uKassId);
+        payment.setStatus(Payment.PaymentStatus.PAID);
         paymentRepository.save(payment);
+        System.out.println("SAVED uKassId: " + payment.getuKassId());
+        System.out.println("RETURN URL: " + confirmationUrl);
         return confirmationUrl;
+    }
+    private Map<String, Object> mockPaymentResponse() {
+        Map<String, Object> mockResponse = new HashMap<>();
+        Map<String, Object> mockConfirmation = new HashMap<>();
+        mockConfirmation.put("type", "redirect");
+        UUID idForLinks = UUID.randomUUID();
+        mockConfirmation.put("confirmation_url", "/payments/result?paymentId=" + idForLinks);
+        mockResponse.put("id", idForLinks.toString());
+        mockResponse.put("status", "pending");
+        mockResponse.put("confirmation", mockConfirmation);
+        return mockResponse;
+    }
+    public Optional<Payment> getByUKassId(String id) {
+        return paymentRepository.findPaymentByUKassId(id);
+    }
+    public Optional<Payment> getById(Long id) {
+        return paymentRepository.findById(id);
     }
 }

@@ -60,6 +60,10 @@ public class Payment {
         this.status = status;
     }
 
+    public String getuKassId() {
+        return uKassId;
+    }
+
     public enum PaymentStatus {
         PENDING, PAID, CANCELED
     }
