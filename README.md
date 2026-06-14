@@ -18,7 +18,7 @@ Java 21, Spring Boot, Spring Security, Spring Data JPA, PostgreSQL, H2, Thymelea
 
 ## 🔗 Живое демо
 
-- **Веб-сайт:** [https://paymentaccess-xxxx.onrender.com](https://paymentaccess-xxxx.onrender.com) *(замени на свой Render URL)*
+- **Веб-сайт:** [https://paymentaccess-xxxx.onrender.com](https://paymentaccess-xxxx.onrender.com)
 - **Страница оплаты:** `/payments`
 - **Админ-панель:** `/payments/all` (логин: `admin`, пароль: `admin123`)
 
